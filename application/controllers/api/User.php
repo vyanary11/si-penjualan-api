@@ -48,7 +48,9 @@ class User extends REST_Controller {
                 $password_encryption =  $this->encryption->decrypt($cek_fase_2->password);
                 if ($password==$password_encryption) {
                     $data_session = array(
-                        'kd_user'       => $cek_fase_2->kd_user,
+                        'kd_user'   => $cek_fase_2->kd_user,
+                        'token'     => "snscjscnjsc"
+
                     );
                     $message = array("success"=>1,"data_user"=>$data_session);
                     $this->response($message, REST_Controller::HTTP_OK);
@@ -78,7 +80,11 @@ class User extends REST_Controller {
             $password_decryption =  $this->encryption->decrypt($row->password);
             if ($row) {
                 $data = array(
-                    "kd_user" => $row->kd_user,
+                    "kd_user"           => $row->kd_user,
+                    "nama_depan"        => $row->nama_depan,
+                    "nama_belakang"     => $row->nama_belakang,
+                    "level_user"        => $row->level_user,
+                    "foto"              => $row->foto,
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
