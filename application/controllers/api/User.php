@@ -64,26 +64,32 @@ class User extends REST_Controller {
             }
         }else if ($api=="editprofile") {
             $data = array(
-                'nama'          => $this->post('nama'),
-                'tempat_lahir'  => $this->post('tempat_lahir'),
-                'tgl_lahir'     => $this->post('tgl_lahir'),
+                'nama_depan'    => $this->post('nama_depan'),
+                'nama_belakang' => $this->post('nama_belakang'),
                 'alamat'        => $this->post('alamat'),
                 'no_hp'         => $this->post('no_hp')
             );
-            $res = $this->M_pegawai->update($this->post('id'),$data);
+            $res = $this->M_pegawai->update($this->post('kd_user'),$data);
             if($res>=0){
                 $this->response(['kode' => 1,'data' => $res], REST_Controller::HTTP_OK);
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Proses Gagal'], REST_Controller::HTTP_OK);
             }
         }else if ($api=="ubahpassword"){
-            $this->load->library('encrypt'); 
-            $key = 'vyanarypratamabanyuwangi12345678';
-            $password_encrypt =  $this->encrypt->encode($this->post('password_baru'), $key);
+            $this->load->library('encryption'); 
+            $key = 'pratamatechnocraft';
+            $this->encryption->initialize(
+                array(
+                    'cipher' => 'aes-256',
+                    'mode' => 'ctr',
+                    'key' => $key
+                )
+            );
+            $password_encrypt =  $this->encryption->encrypt($this->post('password_baru'), $key);
             $data = array(
                 'password'  => $password_encrypt,
             );
-            $res = $this->M_user->update($this->post('id'),$data);
+            $res = $this->M_user->update($this->post('kd_user'),$data);
             if($res>=0){
                 $this->response(['kode' => 1,'data' => $res], REST_Controller::HTTP_OK);
             }else{
@@ -91,12 +97,12 @@ class User extends REST_Controller {
             }
         }else if($api=="ubahfoto"){
             $tgl_sekarang=date("ymdHis");
-            $path="assets/uploads/foto_user/".$this->post('id')."_".$tgl_sekarang.".jpeg";
+            $path="assets/uploads/foto_user/".$this->post('kd_user')."_".$tgl_sekarang.".jpeg";
             if (file_put_contents($path, base64_decode($this->post('foto')))) {
                 $data = array(
                     'foto'  => $path,
                 );
-                $res = $this->M_pegawai->update($this->post('id'),$data);
+                $res = $this->M_pegawai->update($this->post('kd_user'),$data);
                 if($res>=0){
                     $this->response(['kode' => 1,'urlFoto' => $path], REST_Controller::HTTP_OK);
                 }else{
@@ -127,6 +133,7 @@ class User extends REST_Controller {
                     "kd_user"           => $row->kd_user,
                     "nama_depan"        => $row->nama_depan,
                     "nama_belakang"     => $row->nama_belakang,
+                    "password"          => $password_decryption,
                     "alamat"            => $row->alamat,
                     "level_user"        => $row->level_user,
                     "foto"              => $row->foto,
