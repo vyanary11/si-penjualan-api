@@ -97,7 +97,7 @@ class User extends REST_Controller {
             }
         }else if($api=="ubahfoto"){
             $tgl_sekarang=date("ymdHis");
-            $path="assets/uploads/foto_user/".$this->post('kd_user')."_".$tgl_sekarang.".jpeg";
+            $path="assets/images/upload/user/".$this->post('kd_user')."_".$tgl_sekarang.".jpeg";
             if (file_put_contents($path, base64_decode($this->post('foto')))) {
                 $data = array(
                     'foto'  => $path,
@@ -134,6 +134,7 @@ class User extends REST_Controller {
                     "nama_depan"        => $row->nama_depan,
                     "nama_belakang"     => $row->nama_belakang,
                     "password"          => $password_decryption,
+                    "no_telp"           => $row->no_telp,
                     "alamat"            => $row->alamat,
                     "level_user"        => $row->level_user,
                     "foto"              => $row->foto,
