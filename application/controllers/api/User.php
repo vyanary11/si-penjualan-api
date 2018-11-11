@@ -67,9 +67,9 @@ class User extends REST_Controller {
                 'nama_depan'    => $this->post('nama_depan'),
                 'nama_belakang' => $this->post('nama_belakang'),
                 'alamat'        => $this->post('alamat'),
-                'no_hp'         => $this->post('no_hp')
+                'no_telp'       => $this->post('no_telp')
             );
-            $res = $this->M_pegawai->update($this->post('kd_user'),$data);
+            $res = $this->M_user->update($this->post('kd_user'),$data);
             if($res>=0){
                 $this->response(['kode' => 1,'data' => $res], REST_Controller::HTTP_OK);
             }else{
@@ -102,7 +102,7 @@ class User extends REST_Controller {
                 $data = array(
                     'foto'  => $path,
                 );
-                $res = $this->M_pegawai->update($this->post('kd_user'),$data);
+                $res = $this->M_user->update($this->post('kd_user'),$data);
                 if($res>=0){
                     $this->response(['kode' => 1,'urlFoto' => $path], REST_Controller::HTTP_OK);
                 }else{
