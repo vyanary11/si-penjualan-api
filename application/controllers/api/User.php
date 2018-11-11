@@ -110,8 +110,78 @@ class User extends REST_Controller {
                 }   
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Proses Gagal'], REST_Controller::HTTP_OK);
+            }   
+        }else if($api=="tambah") {
+            $this->load->library('encryption'); 
+            $key = 'pratamatechnocraft';
+            $this->encryption->initialize(
+                array(
+                    'cipher' => 'aes-256',
+                    'mode' => 'ctr',
+                    'key' => $key
+                )
+            );
+            $username= $this->post('username');
+            $password =  $this->encryption->encrypt($this->post('password'), $key);
+            $nama_depan= $this->post('nama_depan');
+            $nama_belakang= $this->post('nama_belakang');
+            $no_telp=$this->post('no_telp');
+            $alamat=$this->post('alamat');
+            $level_user=$this->post('level_user');
+
+            $path='assets/images/upload/user/user_'.$nama_depan.'.jpeg';
+            if ($this->post('foto')=="";) {
+                $data = array(  
+                    'kd_user'       => "",
+                    'username'      => $username, 
+                    'password'      => $password,
+                    'nama_depan'    => $nama_depan, 
+                    'nama_belakang' => $nama_belakang,
+                    'no_telp'       => $no_telp,
+                    'alamat'        => $alamat,
+                    'foto'          => "",
+                    'level_user'    => $level_user,
+                );
+            }else{
+                file_put_contents($path, base64_decode($this->post('foto')));
+                $data = array(  
+                    'kd_user'       => "",
+                    'username'      => $username, 
+                    'password'      => $password,
+                    'nama_depan'    => $nama_depan, 
+                    'nama_belakang' => $nama_belakang,
+                    'no_telp'       => $no_telp,
+                    'alamat'        => $alamat,
+                    'foto'          => $path,
+                    'level_user'    => $level_user,
+                );
             }
-            
+
+            $result = $this->M_user->insert($data);
+            if($result>=0){
+                $this->response(['kode' => 1, 'data' => $dataterakhir,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+            }else{
+                $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
+            }
+        }else if($api=="edit") {
+            $nama_depan= $this->post('nama_depan');
+            $nama_belakang= $this->post('nama_belakang');
+            $no_telp=$this->post('no_telp');
+            $alamat=$this->post('alamat');
+            $level_user=$this->post('level_user');
+            $data = array(  
+                'nama_depan'    => $nama_depan, 
+                'nama_belakang' => $nama_belakang,
+                'no_telp'       => $no_telp,
+                'alamat'        => $alamat,
+                'level_user'    => $level_user,
+            );
+            $result = $this->M_user->update($this->post('kd_user'), $data);
+            if($result>=0){
+                $this->response(['kode' => 1, 'data' => $dataterakhir,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+            }else{
+                $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
+            }
         }
     }
     
@@ -141,6 +211,17 @@ class User extends REST_Controller {
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
+        }elseif ($this->get('api')=="userall") {
+            $user = $this->M_user->get_all();
+            $jml_user= $this->M_user->total_rows(0);
+            $data = array(
+                'data'     => $user,
+                'jml_data' => $jml_user
+            );
+            $this->response($data, REST_Controller::HTTP_OK);
+        }else if ($this->get('api')=="userdetail") {
+            $user = $this->M_user->get_by_kd($this->get('kd_user'));
+            $this->response($user, REST_Controller::HTTP_OK);
         }
     }
 }
