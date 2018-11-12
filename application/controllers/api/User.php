@@ -85,7 +85,7 @@ class User extends REST_Controller {
                     'key' => $key
                 )
             );
-            $password_encrypt =  $this->encryption->encrypt($this->post('password_baru'), $key);
+            $password_encrypt =  $this->encryption->encrypt($this->post('password_baru'));
             $data = array(
                 'password'  => $password_encrypt,
             );
@@ -122,7 +122,7 @@ class User extends REST_Controller {
                 )
             );
             $username= $this->post('username');
-            $password =  $this->encryption->encrypt($this->post('password'), $key);
+            $password =  $this->encryption->encrypt($this->post('password'));
             $nama_depan= $this->post('nama_depan');
             $nama_belakang= $this->post('nama_belakang');
             $no_telp=$this->post('no_telp');
@@ -130,7 +130,7 @@ class User extends REST_Controller {
             $level_user=$this->post('level_user');
 
             $path='assets/images/upload/user/user_'.$nama_depan.'.jpeg';
-            if ($this->post('foto')=="";) {
+            if ($this->post('foto_user')=="") {
                 $data = array(  
                     'kd_user'       => "",
                     'username'      => $username, 
@@ -143,7 +143,7 @@ class User extends REST_Controller {
                     'level_user'    => $level_user,
                 );
             }else{
-                file_put_contents($path, base64_decode($this->post('foto')));
+                file_put_contents($path, base64_decode($this->post('foto_user')));
                 $data = array(  
                     'kd_user'       => "",
                     'username'      => $username, 
@@ -159,7 +159,7 @@ class User extends REST_Controller {
 
             $result = $this->M_user->insert($data);
             if($result>=0){
-                $this->response(['kode' => 1, 'data' => $dataterakhir,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 1,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
@@ -219,9 +219,6 @@ class User extends REST_Controller {
                 'jml_data' => $jml_user
             );
             $this->response($data, REST_Controller::HTTP_OK);
-        }else if ($this->get('api')=="userdetail") {
-            $user = $this->M_user->get_by_kd($this->get('kd_user'));
-            $this->response($user, REST_Controller::HTTP_OK);
         }
     }
 }
