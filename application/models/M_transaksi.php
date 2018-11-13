@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_user extends CI_Model
+class M_transaksi extends CI_Model
 {
 
-    public $table = 'user';
-    public $kd = 'kd_user';
+    public $table = 'transaksi';
+    public $kd = 'kd_transaksi';
     public $order = 'DESC';
 
     function __construct()
@@ -35,20 +35,31 @@ class M_user extends CI_Model
         return $this->db->get($this->table)->row();
     }
 
+    // get data by transaksi
+    /*function get_by_kat($kat)
+    {
+        $this->db->where($this->kat, $kat);
+        return $this->db->get($this->table)->result();
+    }*/
+
      // get total rows
     function total_rows($limit,$q = NULL) {
-        $this->db->like('kd_user', $q);
-        $this->db->or_like('nama_depan', $q);
-        $this->db->or_like('level_user', $q);
+        $this->db->like('kd_transaksi', $q);
+        $this->db->or_like('tgl_transaksi', $q);
+        $this->db->or_like('harga_total', $q);
+        $this->db->or_like('jenis_transaksi', $q);
+        $this->db->or_like('status_transaksi', $q);
         return $this->db->get($this->table,$limit)->num_rows();
     }
 
     // get data with limit and search
-    function get_limit_data($limit, $start = 0, $q = NULL, $nama_kolom='kd_user', $order='DESC') {
+    function get_limit_data($limit, $start = 0, $q = NULL, $nama_kolom='kd_transaksi', $order='DESC') {
        $this->db->order_by($nama_kolom, $order);
-       $this->db->like('kd_user', $q);
-       $this->db->or_like('nama_depan', $q);
-       $this->db->or_like('level_user', $q);
+       $this->db->like('kd_transaksi', $q);
+       $this->db->or_like('tgl_transaksi', $q);
+       $this->db->or_like('harga_total', $q);
+       $this->db->or_like('jenis_transaksi', $q);
+       $this->db->or_like('status_transaksi', $q);
        $this->db->limit($limit, $start);
        return $this->db->get($this->table)->result();
     }
@@ -58,6 +69,12 @@ class M_user extends CI_Model
     function insert($data)
     {
         $this->db->insert($this->table, $data);
+    }
+
+    // insert data
+    function insert_to_detail($data)
+    {
+        $this->db->insert("detail_transaksi", $data);
     }
 
     // update data
@@ -72,15 +89,6 @@ class M_user extends CI_Model
     {
         $this->db->where($this->kd, $kd);
         $this->db->delete($this->table);
-    }
-
-    function cek_login($where){      
-        return $this->db->get_where($this->table,$where);
-    }
-
-    function cek_user($where){ 
-        $this->db->where($where);  
-        return $this->db->get($this->table);
     }
 
 }

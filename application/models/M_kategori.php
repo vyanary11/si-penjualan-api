@@ -3,11 +3,11 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class M_user extends CI_Model
+class M_kategori extends CI_Model
 {
 
-    public $table = 'user';
-    public $kd = 'kd_user';
+    public $table = 'kategori';
+    public $kd = 'kd_kategori';
     public $order = 'DESC';
 
     function __construct()
@@ -35,20 +35,25 @@ class M_user extends CI_Model
         return $this->db->get($this->table)->row();
     }
 
+    // get data by kategori
+    /*function get_by_kat($kat)
+    {
+        $this->db->where($this->kat, $kat);
+        return $this->db->get($this->table)->result();
+    }*/
+
      // get total rows
     function total_rows($limit,$q = NULL) {
-        $this->db->like('kd_user', $q);
-        $this->db->or_like('nama_depan', $q);
-        $this->db->or_like('level_user', $q);
+        $this->db->like('kd_kategori', $q);
+        $this->db->or_like('nama_kategori', $q);
         return $this->db->get($this->table,$limit)->num_rows();
     }
 
     // get data with limit and search
-    function get_limit_data($limit, $start = 0, $q = NULL, $nama_kolom='kd_user', $order='DESC') {
+    function get_limit_data($limit, $start = 0, $q = NULL, $nama_kolom='kd_kategori', $order='DESC') {
        $this->db->order_by($nama_kolom, $order);
-       $this->db->like('kd_user', $q);
-       $this->db->or_like('nama_depan', $q);
-       $this->db->or_like('level_user', $q);
+       $this->db->like('kd_kategori', $q);
+       $this->db->or_like('nama_kategori', $q);
        $this->db->limit($limit, $start);
        return $this->db->get($this->table)->result();
     }
@@ -72,15 +77,6 @@ class M_user extends CI_Model
     {
         $this->db->where($this->kd, $kd);
         $this->db->delete($this->table);
-    }
-
-    function cek_login($where){      
-        return $this->db->get_where($this->table,$where);
-    }
-
-    function cek_user($where){ 
-        $this->db->where($where);  
-        return $this->db->get($this->table);
     }
 
 }

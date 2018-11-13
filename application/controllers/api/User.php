@@ -178,7 +178,7 @@ class User extends REST_Controller {
             );
             $result = $this->M_user->update($this->post('kd_user'), $data);
             if($result>=0){
-                $this->response(['kode' => 1, 'data' => $dataterakhir,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
@@ -219,6 +219,13 @@ class User extends REST_Controller {
                 'jml_data' => $jml_user
             );
             $this->response($data, REST_Controller::HTTP_OK);
+        }elseif ($this->get('api')=="delete") {
+            $result = $this->M_user->delete($this->get('kd_user'));
+            if($result>=0){
+                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil dihapus!'], REST_Controller::HTTP_OK);
+            }else{
+                $this->response(['kode' => 2,'pesan' =>'Data gagal dihapus!'], REST_Controller::HTTP_OK);
+            }
         }
     }
 }
