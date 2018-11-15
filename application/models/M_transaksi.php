@@ -16,8 +16,9 @@ class M_transaksi extends CI_Model
     }
 
     // get all
-    function get_all()
-    {
+    function get_all($jenis_transaksi,$status) {
+    	$this->db->where('jenis_transaksi', $jenis_transaksi);
+    	$this->db->where('status', $status);
         $this->db->order_by($this->kd, $this->order);
         return $this->db->get($this->table)->result();
     }
@@ -50,6 +51,12 @@ class M_transaksi extends CI_Model
         $this->db->or_like('jenis_transaksi', $q);
         $this->db->or_like('status_transaksi', $q);
         return $this->db->get($this->table,$limit)->num_rows();
+    }
+
+    function total_rows_perjenis($jenis_transaksi,$status) {
+    	$this->db->where('jenis_transaksi', $jenis_transaksi);
+    	$this->db->where('status', $status);
+        return $this->db->get($this->table)->num_rows();
     }
 
     // get data with limit and search

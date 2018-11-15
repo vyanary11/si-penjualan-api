@@ -212,8 +212,8 @@ class User extends REST_Controller {
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
         }elseif ($this->get('api')=="userall") {
-            $user = $this->M_user->get_all();
-            $jml_user= $this->M_user->total_rows(0);
+            $user = $this->M_user->get_where(array('kd_user !='=> $this->get('kd_user_login')));
+            $jml_user= $this->M_user->total_rows(0,NULL,array('kd_user !='=> $this->get('kd_user_login')));
             $data = array(
                 'data'     => $user,
                 'jml_data' => $jml_user

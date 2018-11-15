@@ -36,7 +36,8 @@ class M_user extends CI_Model
     }
 
      // get total rows
-    function total_rows($limit,$q = NULL) {
+    function total_rows($limit,$q = NULL,$where=NULL) {
+        $this->db->where($where);
         $this->db->like('kd_user', $q);
         $this->db->or_like('nama_depan', $q);
         $this->db->or_like('level_user', $q);
