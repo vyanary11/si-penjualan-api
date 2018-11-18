@@ -22,18 +22,23 @@ class M_transaksi extends CI_Model
         $this->db->order_by($this->kd, $this->order);
         return $this->db->get($this->table)->result();
     }
-    function get_where($where)
-    {
+    function get_where($where){
         $this->db->where($where);
         $this->db->order_by($this->kd, $this->order);
         return $this->db->get($this->table)->result();
     }
 
     // get data by kd
-    function get_by_kd($kd)
-    {
+    function get_by_kd($kd){
         $this->db->where($this->kd, $kd);
         return $this->db->get($this->table)->row();
+    }
+
+    function get_detail_transaksi($kd) {
+        $this->db->where('kd_transaksi', $kd);
+        $this->db->order_by($this->kd, $this->order);
+        $this->db->join("barang", "barang.kd_barang=detail_transaksi.kd_barang","left");
+        return $this->db->get("detail_transaksi")->result();
     }
 
     // get data by transaksi
