@@ -43,20 +43,6 @@ class Kategori extends REST_Controller {
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
-        }else if($api=="edit") {
-            $nama_kategori= $this->post('nama_kategori');
-
-            $data = array(  
-                "kd_kategori"     => "",
-                "nama_kategori"   => $nama_kategori,
-            );
-            
-            $result = $this->M_kategori->update($this->post('kd_kategori'), $data);
-            if($result>=0){
-                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
-            }else{
-                $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
-            }
         }
     }
     

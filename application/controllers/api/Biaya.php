@@ -37,7 +37,7 @@ class Biaya extends REST_Controller {
             $data = array(  
                 'kd_biaya'      => "",
                 'nama_biaya'    => $nama_biaya, 
-                'tgl_biaya'     => date("d M Y H:m", strtotime($tgl_biaya)),
+                'tgl_biaya'     => $tgl_biaya,
                 'jumlah_biaya'  => $jumlah_biaya,
             );
 
@@ -53,7 +53,7 @@ class Biaya extends REST_Controller {
             $jumlah_biaya=$this->post('jumlah_biaya');
             $data = array(  
                 'nama_biaya'    => $nama_biaya, 
-                'tgl_biaya'     => date("d M Y H:m",strtotime($tgl_biaya)),
+                'tgl_biaya'     => $tgl_biaya,
                 'jumlah_biaya'  => $jumlah_biaya,
             );
             $result = $this->M_biaya->update($this->post('kd_biaya'), $data);
@@ -72,7 +72,7 @@ class Biaya extends REST_Controller {
                 $data = array(
                     "kd_biaya"          => $row->kd_biaya,
                     "nama_biaya"        => $row->nama_biaya,
-                    "tgl_biaya"         => date("Y/m/d",strtotime($row->tgl_biaya)),
+                    "tgl_biaya"         => $row->tgl_biaya,
                     "jumlah_biaya"      => $row->jumlah_biaya,
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
@@ -81,7 +81,7 @@ class Biaya extends REST_Controller {
             $biaya = $this->M_biaya->get_all();
             $jml_biaya= $this->M_biaya->total_rows(0);
             foreach ($biaya as $data_biaya) {
-                $data_biaya->jumlah_biaya=number_format($data_biaya->jumlah_biaya);
+                $data_biaya->jumlah_biaya=str_replace(",", ".", number_format($data_biaya->jumlah_biaya));
             }
             $data = array(
                 'data'     => $biaya,
