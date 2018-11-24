@@ -30,15 +30,20 @@ class Transaksi extends REST_Controller {
     function index_post(){
         $api=$this->post('api');
         if($api=="tambah") {
-            $nama_transaksi= $this->post('nama_transaksi');
+            $harga_jual      = $this->post('harga_jual');
+            $harga_beli      = $this->post('harga_beli');
+            $tgl_transaksi   = date("d F Y H:m");
+            $status          = $this->post('status');
+            $catatan         = $this->post('catatan');
+            $jenis_transaksi = $this->post('jenis_transaksi');     
 
             $data = array(  
-                "kd_transaksi"      => $kd_transaksi,
+                "kd_transaksi"      => "",
                 "harga_jual"        => $harga_jual,
                 "harga_beli"        => $harga_beli,
-                "stok"              => $stok,
                 "tgl_transaksi"     => $tgl_transaksi,
-                "status"            => 0,
+                "status"            => $status,
+                "catatan"           => $catatan,    
                 "jenis_transaksi"   => $jenis_transaksi
             );
 
@@ -49,25 +54,19 @@ class Transaksi extends REST_Controller {
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
         }else if($api=="bayar") {
-            $nama_transaksi= $this->post('nama_transaksi');
-
             $data = array(  
-                "kd_transaksi"     => "",
-                "nama_transaksi"   => $nama_transaksi,
+                "status"   => 0;
             );
             
-            $result = $this->M_transaksi->insert($this->post('kd_transaksi'), $data);
+            $result = $this->M_transaksi->update($this->post('kd_transaksi'),$data);
             if($result>=0){
-                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 1, 'pesan' =>'Status Transaksi Berhasil diupdate!'], REST_Controller::HTTP_OK);
             }else{
-                $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 2,'pesan' =>'Status Transaksi Gagal diupdate'], REST_Controller::HTTP_OK);
             }
         }else if($api=="edit") {
-            $nama_transaksi= $this->post('nama_transaksi');
-
             $data = array(  
-                "kd_transaksi"     => "",
-                "nama_transaksi"   => $nama_transaksi,
+                "catatan"   => $this->post('catatan'),
             );
             
             $result = $this->M_transaksi->update($this->post('kd_transaksi'), $data);
@@ -88,12 +87,19 @@ class Transaksi extends REST_Controller {
                     "harga_jual"        => $row->harga_jual,
                     "harga_beli"        => $row->harga_beli,
                     "stok"              => $row->stok,
-                    "tgl_transaksi"     => date("d M Y", strtotime($row->tgl_transaksi)),
+                    "tgl_transaksi"     => date("d F Y H:m", strtotime($row->tgl_transaksi)),
+                    "catatan"           => $row->catatan,
                     "status"            => $row->status,
                     "jenis_transaksi"   => $row->jenis_transaksi
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
+        }elseif ($this->get('api')=="detailinvoice") {
+            $detailtransaksi = $this->M_transaksi->get_detail_transaksi($this->get('kd_transaksi'));
+            $data = array(
+                'data'     => $detailtransaksi,
+            );
+            $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="transaksipenjualan") {
             $transaksi = $this->M_transaksi->get_all("0","0");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("0","0");
