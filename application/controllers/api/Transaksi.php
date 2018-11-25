@@ -94,7 +94,7 @@ class Transaksi extends REST_Controller {
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
-        }elseif ($this->get('api')=="transaksipenjualan") {
+        }elseif ($this->get('api')=="penjualan") {
             $transaksi = $this->M_transaksi->get_all("0","0");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("0","0");
             $data = array(
@@ -102,7 +102,7 @@ class Transaksi extends REST_Controller {
                 'jml_data' => $jml_transaksi
             );
             $this->response($data, REST_Controller::HTTP_OK);
-        }elseif ($this->get('api')=="transaksipembelian") {
+        }elseif ($this->get('api')=="pembelian") {
             $transaksi = $this->M_transaksi->get_all("1","0");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("1","0");
             $data = array(
@@ -110,7 +110,7 @@ class Transaksi extends REST_Controller {
                 'jml_data' => $jml_transaksi
             );
             $this->response($data, REST_Controller::HTTP_OK);
-        }elseif ($this->get('api')=="transaksiutang") {
+        }elseif ($this->get('api')=="utang") {
             $transaksi = $this->M_transaksi->get_all("1","0");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("1","0");
             $data = array(
@@ -118,7 +118,7 @@ class Transaksi extends REST_Controller {
                 'jml_data' => $jml_transaksi
             );
             $this->response($data, REST_Controller::HTTP_OK);
-        }elseif ($this->get('api')=="transaksipiutang") {
+        }elseif ($this->get('api')=="piutang") {
             $transaksi = $this->M_transaksi->get_all("0","1");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("0","1");
             $data = array(
