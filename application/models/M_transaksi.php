@@ -31,6 +31,12 @@ class M_transaksi extends CI_Model
     // get data by kd
     function get_by_kd($kd){
         $this->db->where($this->kd, $kd);
+        $this->db->join("user", "user.kd_user=transaksi.kd_user","left");
+        return $this->db->get($this->table)->row();
+    }
+
+    function get_last(){
+        $this->db->order_by($this->kd, $this->order);
         return $this->db->get($this->table)->row();
     }
 

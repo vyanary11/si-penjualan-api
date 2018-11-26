@@ -31,6 +31,7 @@ class Barang extends REST_Controller {
         $api=$this->post('api');
         if($api=="tambah") {
             $nama_barang= $this->post('nama_barang');
+            $kd_kategori= $this->post('kd_kategori');
             $harga_jual= $this->post('harga_jual');
             $harga_beli=$this->post('harga_beli');
             $stok=$this->post('stok');
@@ -39,6 +40,7 @@ class Barang extends REST_Controller {
             if ($this->post('gambar_barang')=="") {
                 $data = array(  
                     "kd_barang"     => "",
+                    "kd_kategori"   => $kd_kategori,
                     "nama_barang"   => $nama_barang,
                     "harga_jual"    => $harga_jual,
                     "harga_beli"    => $harga_beli,
@@ -46,8 +48,10 @@ class Barang extends REST_Controller {
                     "gambar_barang" => "",
                 );
             }else{
+                file_put_contents($path, base64_decode($this->post('gambar_barang')));
                 $data = array(  
                     "kd_barang"     => "",
+                    "kd_kategori"   => $kd_kategori,
                     "nama_barang"   => $nama_barang,
                     "harga_jual"    => $harga_jual,
                     "harga_beli"    => $harga_beli,
@@ -63,6 +67,7 @@ class Barang extends REST_Controller {
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
         }else if($api=="edit") {
+            $kd_kategori= $this->post('kd_kategori');
             $nama_barang= $this->post('nama_barang');
             $harga_jual= $this->post('harga_jual');
             $harga_beli=$this->post('harga_beli');
@@ -71,7 +76,7 @@ class Barang extends REST_Controller {
             $path='assets/images/upload/barang/barang_'.$nama_barang.'.jpeg';
             if ($this->post('gambar_barang')=="") {
                 $data = array(  
-                    "kd_barang"     => "",
+                    "kd_kategori"   => $kd_kategori,
                     "nama_barang"   => $nama_barang,
                     "harga_jual"    => $harga_jual,
                     "harga_beli"    => $harga_beli,
@@ -79,8 +84,9 @@ class Barang extends REST_Controller {
                     "gambar_barang" => "",
                 );
             }else{
+                file_put_contents($path, base64_decode($this->post('gambar_barang')));
                 $data = array(  
-                    "kd_barang"     => "",
+                    "kd_kategori"   => $kd_kategori,
                     "nama_barang"   => $nama_barang,
                     "harga_jual"    => $harga_jual,
                     "harga_beli"    => $harga_beli,
@@ -104,7 +110,9 @@ class Barang extends REST_Controller {
             if ($row) {
                 $data = array(
                     "kd_barang"     => $row->kd_barang,
+                    "kd_kategori"   => $row->kd_kategori,
                     "nama_barang"   => $row->nama_barang,
+                    "nama_kategori" => $row->nama_kategori,
                     "harga_jual"    => $row->harga_jual,
                     "harga_beli"    => $row->harga_beli,
                     "stok"          => $row->stok,

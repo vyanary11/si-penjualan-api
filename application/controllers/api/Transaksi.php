@@ -25,13 +25,15 @@ class Transaksi extends REST_Controller {
     {
         parent::__construct();
         $this->load->model('M_transaksi');
+        $this->load->model('M_barang');
     }
 
     function index_post(){
         $api=$this->post('api');
         if($api=="tambah") {
-            $harga_jual      = $this->post('harga_jual');
-            $harga_beli      = $this->post('harga_beli');
+            $kd_user         = $this->post('kd_user');
+            $jml_item        = $this->post('jml_item');
+            $harga_total     = $this->post('harga_total');
             $tgl_transaksi   = date("d F Y H:m");
             $status          = $this->post('status');
             $catatan         = $this->post('catatan');
@@ -39,8 +41,9 @@ class Transaksi extends REST_Controller {
 
             $data = array(  
                 "kd_transaksi"      => "",
-                "harga_jual"        => $harga_jual,
-                "harga_beli"        => $harga_beli,
+                "kd_user"           => $kd_user,
+                "jml_item"          => $jml_item,
+                "harga_total"       => $harga_total,
                 "tgl_transaksi"     => $tgl_transaksi,
                 "status"            => $status,
                 "catatan"           => $catatan,    
@@ -49,13 +52,34 @@ class Transaksi extends REST_Controller {
 
             $result = $this->M_transaksi->insert($data);
             if($result>=0){
-                $this->response(['kode' => 1,'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+                $data_terakhir=$this->M_transaksi->get_last();
+                $kd_barang=explode(",", $this->post('kd_barang_keranjang'));
+                $qty=explode(",",$this->post('qty_keranjang'));
+                for ($i=0; $i < count($kd_barang); $i++) {
+                    $data_barang=$this->M_barang->get_by_kd($kd_barang[$i]); 
+                    $data = array(
+                        'kd_transaksi'  => $data_terakhir->kd_transaksi,
+                        'kd_barang'     => $kd_barang[$i], 
+                        'harga_jual'    => $data_barang->harga_jual,
+                        'harga_beli'    => $data_barang->harga_beli,
+                        'qty'           => $qty[$i],
+                    );
+                    if ($data_terakhir->jenis_transaksi==0) {
+                        $data_stok = array('stok' => $data_barang->stok-$qty[$i], );
+                    }else{
+                        $data_stok = array('stok' => $data_barang->stok+$qty[$i], );
+                    }
+
+                    $this->M_barang->update($kd_barang[$i],$data_stok);
+                    $this->M_transaksi->insert_to_detail($data);
+                }
+                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil disimpan!', 'kd_transaksi' => $data_terakhir->kd_transaksi], REST_Controller::HTTP_OK);
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
             }
         }else if($api=="bayar") {
             $data = array(  
-                "status"   => 0;
+                "status"   => 0,
             );
             
             $result = $this->M_transaksi->update($this->post('kd_transaksi'),$data);
@@ -71,9 +95,9 @@ class Transaksi extends REST_Controller {
             
             $result = $this->M_transaksi->update($this->post('kd_transaksi'), $data);
             if($result>=0){
-                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil disimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil diedit!'], REST_Controller::HTTP_OK);
             }else{
-                $this->response(['kode' => 2,'pesan' =>'Data gagal diSimpan!'], REST_Controller::HTTP_OK);
+                $this->response(['kode' => 2,'pesan' =>'Data gagal diedit!'], REST_Controller::HTTP_OK);
             }
         }
     }
@@ -84,9 +108,9 @@ class Transaksi extends REST_Controller {
             if ($row) {
                 $data = array(
                     "kd_transaksi"      => $row->kd_transaksi,
-                    "harga_jual"        => $row->harga_jual,
-                    "harga_beli"        => $row->harga_beli,
-                    "stok"              => $row->stok,
+                    "nama_user"         => $row->nama_depan,
+                    "jml_item"          => $row->jml_item,
+                    "harga_total"       => $row->harga_total,
                     "tgl_transaksi"     => date("d F Y H:m", strtotime($row->tgl_transaksi)),
                     "catatan"           => $row->catatan,
                     "status"            => $row->status,
@@ -94,17 +118,13 @@ class Transaksi extends REST_Controller {
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
-<<<<<<< HEAD
-        }elseif ($this->get('api')=="penjualan") {
-=======
         }elseif ($this->get('api')=="detailinvoice") {
             $detailtransaksi = $this->M_transaksi->get_detail_transaksi($this->get('kd_transaksi'));
             $data = array(
                 'data'     => $detailtransaksi,
             );
             $this->response($data, REST_Controller::HTTP_OK);
-        }elseif ($this->get('api')=="transaksipenjualan") {
->>>>>>> 3e6c9c43d024289083c46049958436326d3e0fa1
+        }elseif ($this->get('api')=="penjualan") {
             $transaksi = $this->M_transaksi->get_all("0","0");
             $jml_transaksi= $this->M_transaksi->total_rows_perjenis("0","0");
             $data = array(
@@ -121,8 +141,8 @@ class Transaksi extends REST_Controller {
             );
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="utang") {
-            $transaksi = $this->M_transaksi->get_all("1","0");
-            $jml_transaksi= $this->M_transaksi->total_rows_perjenis("1","0");
+            $transaksi = $this->M_transaksi->get_all("1","1");
+            $jml_transaksi= $this->M_transaksi->total_rows_perjenis("1","1");
             $data = array(
                 'data'     => $transaksi,
                 'jml_data' => $jml_transaksi

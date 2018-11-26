@@ -32,6 +32,7 @@ class M_barang extends CI_Model
     function get_by_kd($kd)
     {
         $this->db->where($this->kd, $kd);
+        $this->db->join("kategori","kategori.kd_kategori=barang.kd_kategori","left");
         return $this->db->get($this->table)->row();
     }
 
