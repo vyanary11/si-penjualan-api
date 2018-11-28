@@ -121,7 +121,7 @@ class Transaksi extends REST_Controller {
         }elseif ($this->get('api')=="detailinvoice") {
             $detailtransaksi = $this->M_transaksi->get_detail_transaksi($this->get('kd_transaksi'));
             $data = array(
-                'data'     => $detailtransaksi,
+                'data'     => $detailtransaksi, 
             );
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="penjualan") {
@@ -154,6 +154,63 @@ class Transaksi extends REST_Controller {
             $data = array(
                 'data'     => $transaksi,
                 'jml_data' => $jml_transaksi
+            );
+            $this->response($data, REST_Controller::HTTP_OK);
+        }elseif ($this->get('api')=="laporan") {
+            $dari=$this->get('dari');
+            $sampai=$this->get('sampai');
+            $bulan=$this->get('bulan');
+            $tahun=$this->get('tahun');
+            if ($this->get("lap")=="laplabarugi") {
+                $where="WHERE MONTH(tgl_transaksi)='$bulan' and YEAR(tgl_transaksi)='$tahun'";
+            }elseif ($this->get("lap")=="harian") {
+                $where="WHERE jenis_transaksi='0' and tgl_transaksi BETWEEN '$dari' and '$sampai'";
+            }elseif ($this->get("lap")=="bulanan") {
+                $where="WHERE jenis_transaksi='0' and MONTH(tgl_transaksi)='$bulan' and YEAR(tgl_transaksi)='$tahun'";
+            }elseif ($this->get("lap")=="tahunan") {
+                $where="WHERE jenis_transaksi='0' and YEAR(tgl_transaksi)='$tahun'";
+            }
+
+            $laporan = $this->M_transaksi->laporan($where)->result();
+            $jml_data= $this->M_transaksi->laporan($where)->num_rows();
+
+            if ($this->get("lap")=="laplabarugi") {
+                foreach ($laporan as $data_laporan) {
+                    if ($data_laporan=="0") {
+                        $income=$income+$data_laporan->harga_total;
+                    }elseif ($data_laporan=="1") {
+                        $expense=$expense+$data_laporan->harga_total;
+                    }
+                }
+                $data = array(
+                    'income'        => $income, 
+                    'expense'       => $expense,
+                    'net_income'    => $income-$expense,
+                );
+            }elseif ($this->get("lap")=="harian") {
+
+            }elseif ($this->get("lap")=="bulanan") {
+
+            }elseif ($this->get("lap")=="tahunan") {
+
+            }
+
+            $data = array(
+                'data'     => $data,
+                'jml_data' => $jml_data
+            );
+            $this->response($data, REST_Controller::HTTP_OK);
+        }elseif ($this->get('api')=="bebanbiaya") {
+            $bulan=$this->get('bulan');
+            $tahun=$this->get('tahun');
+            $where="WHERE MONTH(tgl_biaya)='$bulan' and YEAR(tgl_biaya)='$tahun'";
+
+            $bebanbiaya = $this->M_transaksi->bebanbiaya($where)->result();
+            $jml_data= $this->M_transaksi->bebanbiaya($where)->num_rows();
+
+            $data = array(
+                'data'     => $bebanbiaya,
+                'jml_data' => $jml_data
             );
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="delete") {

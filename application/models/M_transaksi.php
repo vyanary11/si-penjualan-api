@@ -82,6 +82,14 @@ class M_transaksi extends CI_Model
        return $this->db->get($this->table)->result();
     }
 
+    function laporan($where){
+        return $this->db->query("SELECT * FROM transaksi ".$where);
+    }
+
+    function bebanbiaya($where){
+        return $this->db->query("SELECT * FROM biaya ".$where);
+    }
+
 
     // insert data
     function insert($data)
@@ -91,7 +99,7 @@ class M_transaksi extends CI_Model
 
     // insert data
     function insert_to_detail($data)
-    {
+    {  
         $this->db->insert("detail_transaksi", $data);
     }
 
