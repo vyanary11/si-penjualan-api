@@ -48,16 +48,19 @@ class Barang extends REST_Controller {
                     "gambar_barang" => "",
                 );
             }else{
-                file_put_contents($path, base64_decode($this->post('gambar_barang')));
-                $data = array(  
-                    "kd_barang"     => "",
-                    "kd_kategori"   => $kd_kategori,
-                    "nama_barang"   => $nama_barang,
-                    "harga_jual"    => $harga_jual,
-                    "harga_beli"    => $harga_beli,
-                    "stok"          => $stok,
-                    "gambar_barang" => $path,
-                );
+                if(file_put_contents($path, base64_decode($this->post('gambar_barang')))){
+                    $data = array(  
+                        "kd_barang"     => "",
+                        "kd_kategori"   => $kd_kategori,
+                        "nama_barang"   => $nama_barang,
+                        "harga_jual"    => $harga_jual,
+                        "harga_beli"    => $harga_beli,
+                        "stok"          => $stok,
+                        "gambar_barang" => $path,
+                    );
+                }else{
+
+                }
             }
 
             $result = $this->M_barang->insert($data);
