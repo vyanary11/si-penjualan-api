@@ -105,16 +105,18 @@ class Transaksi extends REST_Controller {
     function index_get(){
         if ($this->get('api')=="transaksidetail") {
             $row = $this->M_transaksi->get_by_kd($this->get('kd_transaksi'));
+            $detailinvoice = $this->M_transaksi->get_detail_transaksi($this->get('kd_transaksi'));
             if ($row) {
                 $data = array(
                     "kd_transaksi"      => $row->kd_transaksi,
                     "nama_user"         => $row->nama_depan,
                     "jml_item"          => $row->jml_item,
-                    "harga_total"       => $row->harga_total,
+                    "harga_total"       => str_replace(",",".", number_format($row->harga_total)),
                     "tgl_transaksi"     => date("d F Y H:m", strtotime($row->tgl_transaksi)),
                     "catatan"           => $row->catatan,
                     "status"            => $row->status,
-                    "jenis_transaksi"   => $row->jenis_transaksi
+                    "jenis_transaksi"   => $row->jenis_transaksi,
+                    "detailinvoice"     => $detailinvoice
                 );
                 $this->response($data, REST_Controller::HTTP_OK);   
             }
@@ -133,6 +135,7 @@ class Transaksi extends REST_Controller {
             );
             foreach ($transaksi as $data_transaksi) {
                 $data_transaksi->tgl_transaksi=date("d F Y H:m", strtotime($data_transaksi->tgl_transaksi));
+                $data_transaksi->harga_total=str_replace(",", ".", number_format($data_transaksi->harga_total));
             }
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="pembelian") {
@@ -145,6 +148,7 @@ class Transaksi extends REST_Controller {
             $couter=0;
             foreach ($transaksi as $data_transaksi) {
                 $data_transaksi->tgl_transaksi=date("d F Y H:m", strtotime($data_transaksi->tgl_transaksi));
+                $data_transaksi->harga_total=str_replace(",", ".", number_format($data_transaksi->harga_total));
             }
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="utang") {
@@ -156,6 +160,7 @@ class Transaksi extends REST_Controller {
             );
             foreach ($transaksi as $data_transaksi) {
                 $data_transaksi->tgl_transaksi=date("d F Y H:m", strtotime($data_transaksi->tgl_transaksi));
+                $data_transaksi->harga_total=str_replace(",", ".", number_format($data_transaksi->harga_total));
             }
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="piutang") {
@@ -167,6 +172,7 @@ class Transaksi extends REST_Controller {
             );
             foreach ($transaksi as $data_transaksi) {
                 $data_transaksi->tgl_transaksi=date("d F Y H:m", strtotime($data_transaksi->tgl_transaksi));
+                $data_transaksi->harga_total=str_replace(",", ".", number_format($data_transaksi->harga_total));
             }
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="laporan") {
