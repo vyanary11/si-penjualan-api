@@ -58,11 +58,11 @@ class Transaksi extends REST_Controller {
                 for ($i=0; $i < count($kd_barang); $i++) {
                     $data_barang=$this->M_barang->get_by_kd($kd_barang[$i]); 
                     $data = array(
-                        'kd_transaksi'  => $data_terakhir->kd_transaksi,
-                        'kd_barang'     => $kd_barang[$i], 
-                        'harga_jual'    => $data_barang->harga_jual,
-                        'harga_beli'    => $data_barang->harga_beli,
-                        'qty'           => $qty[$i],
+                        'kd_transaksi'          => $data_terakhir->kd_transaksi,
+                        'kd_barang'             => $kd_barang[$i], 
+                        'harga_jual_detail'     => $data_barang->harga_jual,
+                        'harga_beli_detail'     => $data_barang->harga_beli,
+                        'qty'                   => $qty[$i],
                     );
                     if ($data_terakhir->jenis_transaksi==0) {
                         $data_stok = array('stok' => $data_barang->stok-$qty[$i], );
@@ -122,6 +122,11 @@ class Transaksi extends REST_Controller {
             }
         }elseif ($this->get('api')=="detailinvoice") {
             $detailtransaksi = $this->M_transaksi->get_detail_transaksi($this->get('kd_transaksi'));
+            foreach ($detailtransaksi as $data_detailtransaksi) {
+                if ($data_detailtransaksi->nama_barang==null) {
+                    $data_detailtransaksi->nama_barang=" ";
+                }
+            }
             $data = array(
                 'data'     => $detailtransaksi, 
             );
@@ -235,7 +240,12 @@ class Transaksi extends REST_Controller {
         }elseif ($this->get('api')=="delete") {
             $result = $this->M_transaksi->delete($this->get('kd_transaksi'));
             if($result>=0){
-                $this->response(['kode' => 1, 'pesan' =>'Data Berhasil dihapus!'], REST_Controller::HTTP_OK);
+                $result1 = $this->M_transaksi->delete_detail($this->get('kd_transaksi'));
+                if ($result1>=0) {
+                    $this->response(['kode' => 1, 'pesan' =>'Data Berhasil dihapus!'], REST_Controller::HTTP_OK);
+                }else{
+                    $this->response(['kode' => 2,'pesan' =>'Data gagal dihapus!'], REST_Controller::HTTP_OK);
+                }
             }else{
                 $this->response(['kode' => 2,'pesan' =>'Data gagal dihapus!'], REST_Controller::HTTP_OK);
             }

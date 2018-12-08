@@ -117,4 +117,10 @@ class M_transaksi extends CI_Model
         $this->db->delete($this->table);
     }
 
+    function delete_detail($kd)
+    {
+        $this->db->where($this->kd, $kd);
+        $this->db->delete("detail_transaksi");
+    }
+
 }
