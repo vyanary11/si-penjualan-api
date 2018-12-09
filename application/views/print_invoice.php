@@ -3,12 +3,10 @@
 <head>
 	<style type="text/css" media="print">
         @page { 
-            size: A5;
-            size: portrait;
+            width: 58mm;
             margin: 0;
         }
         body{
-        	width: 58mm;
             margin: 0;
         }
     </style> 
