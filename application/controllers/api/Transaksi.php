@@ -182,18 +182,24 @@ class Transaksi extends REST_Controller {
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="laporan") {
             $jml_data_biaya=0;
-            $dari=$this->get('dari');
-            $sampai=$this->get('sampai');
+            $hari_dari= date("d",strtotime($this->get('dari')));
+            $bulan_dari= date("m",strtotime($this->get('dari')));
+            $tahun_dari=date("Y",strtotime($this->get('dari')));
+            $dari= date("Y-m-d",strtotime($tahun_dari."/".$bulan_dari."/".$hari_dari));
+            $hari_sampai= date("d",strtotime($this->get('sampai')))+1;
+            $bulan_sampai= date("m",strtotime($this->get('sampai')));
+            $tahun_sampai=date("Y",strtotime($this->get('sampai')));
+            $sampai= date("Y-m-d",strtotime($tahun_sampai."/".$bulan_sampai."/".$hari_sampai));
             $bulan=$this->get('bulan');
             $tahun=$this->get('tahun');
             if ($this->get("lap")=="laplabarugi") {
                 $where="WHERE MONTH(tgl_transaksi)='$bulan' and YEAR(tgl_transaksi)='$tahun'";
             }elseif ($this->get("lap")=="harian") {
-                $where="WHERE jenis_transaksi='0' and tgl_transaksi BETWEEN '$dari' and '$sampai'";
+                $where="WHERE transaksi.jenis_transaksi='0' and transaksi.tgl_transaksi BETWEEN '$dari' and '$sampai'";
             }elseif ($this->get("lap")=="bulanan") {
-                $where="WHERE jenis_transaksi='0' and MONTH(tgl_transaksi)='$bulan' and YEAR(tgl_transaksi)='$tahun'";
+                $where="WHERE transaksi.jenis_transaksi='0' and MONTH(transaksi.tgl_transaksi)='$bulan' and YEAR(transaksi.tgl_transaksi)='$tahun'";
             }elseif ($this->get("lap")=="tahunan") {
-                $where="WHERE jenis_transaksi='0' and YEAR(tgl_transaksi)='$tahun'";
+                $where="WHERE transaksi.jenis_transaksi='0' and YEAR(transaksi.tgl_transaksi)='$tahun'";
             }
 
             $laporan = $this->M_transaksi->laporan($where)->result();
@@ -224,12 +230,17 @@ class Transaksi extends REST_Controller {
                     'totalbiaya'    => $expense+$totalbiaya,
                     'data_biaya'    => $bebanbiaya,
                 );
-            }elseif ($this->get("lap")=="harian") {
-
-            }elseif ($this->get("lap")=="bulanan") {
-
-            }elseif ($this->get("lap")=="tahunan") {
-
+            }else{
+                $pendapatan=0;
+                foreach ($laporan as $data_laporan) {
+                    $pendapatan=$pendapatan+$data_laporan->harga_total;
+                }
+                $data = array(
+                    'pendapatan' => $pendapatan,
+                    'jml_transaksi' => $jml_data,
+                    'total_harga_semua' => $pendapatan,
+                    'barangTerjual' => $this->M_transaksi->get_barang_terjual($where),
+                );
             }
 
             $data = array(

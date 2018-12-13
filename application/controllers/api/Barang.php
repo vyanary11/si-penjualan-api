@@ -76,7 +76,7 @@ class Barang extends REST_Controller {
             $harga_beli=$this->post('harga_beli');
             $stok=$this->post('stok');
 
-            $path='assets/images/upload/barang/barang_'.$nama_barang.'.jpeg';
+            $path='assets/images/upload/barang/barang_'.$nama_barang.'_'.time().'.jpeg';
             if ($this->post('gambar_barang')=="") {
                 $data = array(  
                     "kd_kategori"   => $kd_kategori,
@@ -87,6 +87,8 @@ class Barang extends REST_Controller {
                     "gambar_barang" => "",
                 );
             }else{
+                $data_barang=$this->M_barang->get_by_kd($this->post('kd_barang'));
+                unlink($data_barang->gambar_barang);
                 file_put_contents($path, base64_decode($this->post('gambar_barang')));
                 $data = array(  
                     "kd_kategori"   => $kd_kategori,
@@ -132,6 +134,8 @@ class Barang extends REST_Controller {
             );
             $this->response($data, REST_Controller::HTTP_OK);
         }elseif ($this->get('api')=="delete") {
+            $data_barang=$this->M_barang->get_by_kd($this->get('kd_barang'));
+            unlink($data_barang->gambar_barang);
             $result = $this->M_barang->delete($this->get('kd_barang'));
             if($result>=0){
                 $this->response(['kode' => 1, 'pesan' =>'Data Berhasil dihapus!'], REST_Controller::HTTP_OK);

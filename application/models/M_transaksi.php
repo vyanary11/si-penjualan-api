@@ -47,6 +47,13 @@ class M_transaksi extends CI_Model
         return $this->db->get("detail_transaksi")->result();
     }
 
+    function get_barang_terjual($where){
+        /*$this->db->join("barang", "barang.kd_barang=detail_transaksi.kd_barang","left");
+        $this->db->join("transaksi", "detail_transaksi.kd_transaksi=transaksi.kd_transaksi","left");
+        $this->db->group_by("kd_barang");*/
+        return $this->db->query("SELECT sum(qty) as qty, nama_barang, harga_jual_detail FROM detail_transaksi LEFT JOIN transaksi ON detail_transaksi.kd_transaksi=transaksi.kd_transaksi LEFT JOIN barang ON barang.kd_barang=detail_transaksi.kd_barang ".$where." GROUP BY detail_transaksi.kd_barang ORDER BY qty DESC")->result();
+    }
+
     // get data by transaksi
     /*function get_by_kat($kat)
     {
